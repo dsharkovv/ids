@@ -1,0 +1,72 @@
+{
+    "description":[
+        "The below commands create a grid search using PyTorch on the two-class version of NSL-KDD.",
+        "The grid search is performed with two classifiers - one with one layer and 100 hidden units",
+        "and one with two layers, the first with 200 hidden units and the second - with 300.",
+        "Three different values are tested for weight decay and two for learning rate.",
+        "The learning rate is set to be reduced by 50% every if no improvement is observed after 10 epochs",
+        "A second command changes the dataset to two-class, but with PCA and trains an autoencoder.",
+        "A third command changes the dataset to five-class and trains a classifier with a stacked autoencoder",
+        "The autoencoder has early stopping enabled with a waiting period of 20 epochs. It is important",
+        "to note that the stacked autoencoder takes parameters as lists, where the number of elements",
+        "is either one or it equals the number of layers. If one value is given, it will be used",
+        "for all of the autoencoders that the stacked atoencoder consists of."
+    ],
+    "backend":"py",
+    "dataset":"2c",
+    "commands":[
+        {
+            "name": "gs","model": "cl",
+            "params":{
+                "hn":[[100],[200,300]],
+                "wd":[0.001,0.002,0.003],
+                "lr":[0.005,0.006],
+                "ne":[2]
+            },
+            "options":{
+                "reduce_lr":{
+                    "factor":0.5,
+                    "patience":10
+                },
+                "cs":true
+            },
+            "model_dir": "cl_py"
+        },
+        {
+            "name": "gs","model": "ae",
+            "dataset":{
+                "name":"5c",
+                "pca":20
+            },
+            "params":{
+                "hn":[500],
+                "wd":[0.001,0.002,0.003],
+                "lr":[0.005,0.006],
+                "rho":[0.05,0.01],
+                "ne":[2]
+            },
+            "model_dir": "ae_py"
+        },
+        {
+            "name": "gs","model": "clsae",
+            "dataset":"5c",
+            "params_ae":{
+                "hn":[[500,600]],
+                "wd":[[0.001],[0.002],[0.003]],
+                "lr":[[0.005],[0.006]],
+                "rho":[[0.05],[0.01]],
+                "ne":[[2]]
+            },
+            "params_cl":{
+                "hn":[[100],[200,300]],
+                "wd":[0.001,0.002,0.003],
+                "lr":[0.005,0.006],
+                "ne":[2]
+            },
+            "options_ae":{
+                "es":20
+            },
+            "model_dir": "clsae_py"
+        }
+    ]
+}
